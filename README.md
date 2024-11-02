@@ -1,4 +1,4 @@
-My first project learning c++. This is an expression calculator that uses Boost Multiprecision MPFR backend to handle very long number calculations.
+My first project learning c++. This is an expression calculator that uses Boost Multiprecision MPFR backend to handle very long and huge number calculations.
 The given example is set to 999 internal bits, but can be set to 999999 or more which is definitely overkill and takes up resources.
 The calculator is set to support nested expressions and handles most of errors.
 For now, some single argument functions and constants like pi, e, phi are implemented.

@@ -1,0 +1,43 @@
+//#include "winapi.cpp"
+
+int main() {
+
+    SetConsoleTitleW(L"BN Calculator v0.0.0.1b");
+    titleMenu();
+
+    int precission = 999;
+
+    while(true){
+    std::string input;
+    color(7);
+    std::cout << "\n> ";
+    color(6);
+    std::getline(std::cin >> std::ws, input);
+        if (input == "exit"){ break; }
+        if (input == "set"){
+            std::cout << "\nOutput precision of backend <999>, default '999'.";
+            color(7);
+            std::cout << " > ";
+            color(6);
+            std::cin >> precission;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+        if (input == "list"){ funcList(); continue; }
+        if (input == "cls"){ clearConsole(); continue; }
+    try {
+        auto elements = elementCollector(input);
+        calculator calculate(elements);
+        std::unique_ptr<LineNode> root(calculate.process());
+        type_big result = root->evaluate();
+        color(10);
+        std::cout << "\n  " << std::setprecision(precission) << result << std::endl;
+    } catch (const std::runtime_error& e) {
+        color(4);
+        std::cerr << "\nError: " << e.what() << std::endl;
+    }
+    }
+    color(7);
+    return 0;
+}

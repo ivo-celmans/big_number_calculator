@@ -368,67 +368,70 @@ LineNode* calculator::processLaw() {
         }
     }
     
-    while (currentElement().type == ElementOperator::Power) {
-        Element op = currentElement();
-        progress();
-        LineNode* right = processFactor();
-        left = new PowerNode(left, right);
-    }
-    
     return left;
 }
-
 LineNode* calculator::processFactor() {
+    LineNode* left = nullptr;
+
     if (currentElement().type == ElementOperator::Minus) {
         progress();
-        LineNode* oper = processFactor();
-        return new UnaryMinusNode(oper);
+        left = processFactor();
+        return new UnaryMinusNode(left);
     }
 
     if (currentElement().type == ElementOperator::Plus) {
         progress();
-        LineNode* oper = processFactor();
-        return new UnaryPlusNode(oper);
+        left = processFactor();
+        return new UnaryPlusNode(left);
     }
 
     if (currentElement().type == ElementOperator::Number) {
         type_big value(currentElement().value);
         progress();
-        return new NumberNode(value);
+        left = new NumberNode(value);
     }
 
     if (currentElement().type == ElementOperator::Constant) {
         std::string constantName = currentElement().value;
         progress();
-        return new ConstantNode(constantName);
+        left = new ConstantNode(constantName);
     }
 
     if (currentElement().type == ElementOperator::Function) {
         std::string functionName = currentElement().value;
         progress();
         if (currentElement().type != ElementOperator::OParent) {
-            throw std::runtime_error("Missing function argument.");
+            throw std::runtime_error("Missing function argument!");
         }
         progress();
         LineNode* argument = processLine();
         if (currentElement().type != ElementOperator::CParent) {
-            throw std::runtime_error("Mismatched parentheses.");
+            throw std::runtime_error("Mismatched parentheses!");
         }
         progress();
-        return new FunctionNode(functionName, argument);
+        left = new FunctionNode(functionName, argument);
     }
 
     if (currentElement().type == ElementOperator::OParent) {
         progress();
-        LineNode* node = processLine();
+        left = processLine();
         if (currentElement().type != ElementOperator::CParent) {
-            throw std::runtime_error("Mismatched parentheses.");
+            throw std::runtime_error("Mismatched parentheses!");
         }
         progress();
-        return node;
     }
 
-    throw std::runtime_error("Input Invalid.");
+    if (left != nullptr && currentElement().type == ElementOperator::Power) {
+        progress();
+        LineNode* right = processFactor();
+        left = new PowerNode(left, right);
+    }
+
+    if (left == nullptr) {
+        throw std::runtime_error("Input invalid!");
+    }
+
+    return left;
 }
 
 int main() {
